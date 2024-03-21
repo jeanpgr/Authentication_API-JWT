@@ -1,19 +1,19 @@
 <?php
 
-class DatabaseService{
+include_once 'environment_variables.php';
 
-    private $db_host = "localhost";
-    private $db_name = "testeoapi_db";
-    private $db_user = "root";
-    private $db_password = "";
+class DatabaseService{
+    
     private $connection;
 
-    public function getConnection(){
+    public function getConnection() {
 
+        $env_variables = new EnvironmentVariables();
         $this->connection = null;
 
         try{
-            $this->connection = new PDO("mysql:host=" . $this->db_host . ";dbname=" . $this->db_name, $this->db_user, $this->db_password);
+            $this->connection = new PDO("mysql:host=" . $env_variables->getHost() . ";dbname=" . $env_variables->getNamedb(), 
+                                        $env_variables->getUserDb(), $env_variables->getPasswordDb());
         }catch(PDOException $exception){
             echo "Connection failed: " . $exception->getMessage();
         }

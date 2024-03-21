@@ -1,5 +1,6 @@
 <?php
 include_once '../config/database.php';
+include_once '../config/environment_variables.php';
 require "../vendor/autoload.php";
 use \Firebase\JWT\JWT;
 
@@ -13,6 +14,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 $email_user = '';
 $passw_user = '';
 
+$env_variables = new EnvironmentVariables();
 $databaseService = new DatabaseService();
 $conn = $databaseService->getConnection();
 
@@ -39,7 +41,7 @@ if($num > 0){
 
     if(password_verify($passw_user, $passw_db))
     {
-        $secret_key = "123api";
+        $secret_key = $env_variables->getKeyJwt();
         $issuer_claim = "localhost"; // this can be the servername
         $audience_claim = "THE_AUDIENCE";
         $issuedat_claim = time(); // issued at
