@@ -1,6 +1,7 @@
 
 <?php
 
+// Variables de entorno para la configuración de la app
 class EnvironmentVariables {
 
     private $DB_HOST = "localhost";

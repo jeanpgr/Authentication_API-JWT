@@ -1,6 +1,5 @@
 <?php
 
-//require_once '../models/User.php';
 require_once '../api-rest/data/DatabaseJsonResponse.php';
 
 class UserController {

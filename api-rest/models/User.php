@@ -1,5 +1,7 @@
 <?php
 
+
+// Modelo de usuario
 class User {
     
     private $id_user;

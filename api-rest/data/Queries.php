@@ -1,5 +1,6 @@
 <?php
 
+// Clase para retornar las consultas a la db
 class Queries {
 
     public function queryLogin() {
