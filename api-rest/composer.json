@@ -1,0 +1,6 @@
+{
+    "require": {
+        "firebase/php-jwt": "^6.10",
+        "flightphp/core": "^3.6"
+    }
+}

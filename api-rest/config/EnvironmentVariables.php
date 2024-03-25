@@ -9,6 +9,7 @@ class EnvironmentVariables {
     private $DB_PASSWORD = "";
     
     private $KEY_JWT = "asdfghjkl_k1";
+    private $ALGORITHM_JWT = "HS256";
 
     public function getHost() {
         return $this->DB_HOST;
@@ -28,6 +29,10 @@ class EnvironmentVariables {
 
     public function getKeyJwt() {
         return $this->KEY_JWT;
+    }
+
+    public function getAlgJwt() {
+        return $this->ALGORITHM_JWT;
     }
 
 }
