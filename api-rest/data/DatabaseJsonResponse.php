@@ -88,7 +88,7 @@ class DatabaseJsonResponse {
 
         // Si el resultado es satisfactorio modifica el array de respuesta por mensaje satisfactorio
         if ($result) {
-
+            
             $array = [
                 "User" => [
                     "id" => $this->svDatabase->lastInsertId(),
