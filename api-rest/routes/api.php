@@ -10,6 +10,7 @@ function getUserController() {
     return $userController = new UserController();
 }
 
+// Recibe json con el email y contraseña
 Flight::route('POST /login', function () {
     
     $data = Flight::request()->data; // Obtener los datos JSON del cuerpo de la solicitud
@@ -24,6 +25,7 @@ Flight::route('POST /login', function () {
     }
 });
 
+// Recibe json con los datos del usuario a registrar
 Flight::route('POST /registerUser', function () {
 
     $data = Flight::request()->data;
@@ -38,6 +40,20 @@ Flight::route('POST /registerUser', function () {
     } else {
 
         Flight::json(["error" => "Se requiere todos los campos", BAD_REQUEST]);
+    }
+
+});
+
+Flight::route('GET /getUsers', function() {
+
+    $headers = apache_request_headers(); // Obtener encabezado con el token authorization
+
+    $response = getUserController()->getUsers($headers); // Obtener respuesta de la capa de datos
+
+    if ($response["status"] == 'error' ) {  // Si el estado es error muestra el mensaje del error que se produjo 
+        Flight::halt(FORBIDDEN, $response["error"]);
+    } else {
+        Flight::json($response); // Si el estado es OK devuelve la lista de usuarios
     }
 
 });

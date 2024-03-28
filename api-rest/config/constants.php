@@ -11,6 +11,7 @@ define('EXP', time() + 604800); // tiempo de expiracion se suma en segundos (opc
 define('SUCCESS_RESPONSE', 200);
 define('ACCESS_DENIED', 401);
 define('BAD_REQUEST', 400);
+define('FORBIDDEN', 403);
 
 
 ?>

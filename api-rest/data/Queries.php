@@ -20,6 +20,19 @@ class Queries {
         
         return $query;
     }
+
+    public function queryGetUserById() {
+        $query = "SELECT id_user, nomb_user, apell_user, email_user
+                    FROM users WHERE id_user = :id";
+        
+        return $query;
+    }
+
+    public function queryGetUsers() {
+        $query = "SELECT id_user, nomb_user, apell_user, nick_user, email_user FROM users";
+        
+        return $query;
+    }
 }
 
 ?>

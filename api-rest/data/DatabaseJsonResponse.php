@@ -5,8 +5,8 @@ include_once '../api-rest/config/EnvironmentVariables.php';
 include_once '../api-rest/config/constants.php';
 include_once 'Queries.php';
 
-require 'vendor/autoload.php';
 use \Firebase\JWT\JWT;
+use \Firebase\JWT\Key;
 
 // Clase para retornar los datos traidos de la db en json
 class DatabaseJsonResponse {
@@ -36,7 +36,7 @@ class DatabaseJsonResponse {
             $passw_db = $data['passw_user'];
             // Metodo password_verify descodifica la contraseña traida de la db y la compara con la recibida
             if (password_verify($password, $passw_db)) { 
-
+                // Prepara el token con la información requerida
                 $token = array(
                     "iss" => ISS,
                     "aud" => AUD,
@@ -44,27 +44,24 @@ class DatabaseJsonResponse {
                     "nbf" => NBF,
                     "exp" => EXP,
 
-                    "data" => array(
+                    "user" => array(
                         "id" => $data['id_user'],
                         "nombre" => $data['nomb_user'],
                         "apellido" => $data['apell_user'],
                         "email" => $data['email_user']
                 ));
 
-                http_response_code(SUCCESS_RESPONSE);
-
                 // Codifica el token 
                 $jwt = JWT::encode($token, $this->envVariables->getKeyJwt(), $this->envVariables->getAlgJwt());
                 return array(
                     "message" => "Inicio de sesión satisfactorio.",
-                    "jwt" => $jwt,
-                    "id" => $data['id_user']
+                    "token" => $jwt,
+                    "status" => 'OK'
                 );
                 
             } else {
-                http_response_code(ACCESS_DENIED);
-
-                return array("message" => "Inicio de sesión fallido.");
+                return array("message" => 'Inicio de sesión fallido.',
+                                "status" => 'error');
             }
         }
     }
@@ -90,23 +87,80 @@ class DatabaseJsonResponse {
         if ($result) {
             
             $array = [
-                "User" => [
-                    "id" => $this->svDatabase->lastInsertId(),
-                    "nombre" => $user->getNombUser(),
-                    "apellido" => $user->getApellUser(),
-                    "email" => $user->getEmailUser()
-                ],
-                "status" => "Registro satisfactorio."
+                "message" => 'Registro satisfactorio.',
+                "status" => 'OK'
             ];
         }
         
-        Flight::json($array);
+        return $array;
     }
 
-    public function protectResources() {
-        
+    public function getUsers($headers) {
+
+        if ($this->validateToken($headers)["status"] == "error") { // Validar token recibido (headers) para obtener data
+            return array("error" =>  $this->validateToken($headers)["error"],
+                            "status" => 'error');
+        }
+        $query = $this->svDatabase->prepare($this->sqlQueries->queryGetUsers());
+        $query->execute();
+        $data = $query->fetchAll();
+        $users = [];
+        foreach ($data as $row) {
+            $users[] = [
+                "id" => $row['id_user'],
+                "nombre" => $row['nomb_user'],
+                "apellido" => $row['apell_user'],
+                "nick" => $row['nick_user'],
+                "email" => $row['email_user']
+            ];
+        }
+
+        return array("total_users" => $query->rowCount(),
+                        "users" => $users,
+                        "status" => 'OK');
+
+    }
+
+    // Función para obtener token y retornar decodeado
+    private function getToken($headers) {
+        if (isset($headers["Authorization"])) {
+            $authorization = $headers["Authorization"];
+            $authorizationArray = explode(" ", $authorization);
+            
+            // Verificar si el token está vacío después de dividirlo
+            if (empty($authorizationArray[1])) {
+                return array("error" => 'Unauthenticated request',
+                             "status" => 'error');
+            }
+    
+            try {
+                $token = $authorizationArray[1]; // Obtener token
+                return array("data" => JWT::decode($token, new Key($this->envVariables->getKeyJwt(), $this->envVariables->getAlgJwt())),
+                             "status" => 'OK');
+            } catch (\Throwable $th) {
+                return array("error" => $th->getMessage(),
+                             "status" => 'error');
+            }
+        } else {
+            return array("error" => 'Unauthenticated request',
+                         "status" => 'error');
+        }
+    }
+
+    // Función para validar token 
+    private function validateToken($headers) {
+        $token = $this->getToken($headers);
+        if ($token["status"] == 'OK') {
+            $query = $this->svDatabase->prepare($this->sqlQueries->queryGetUserById());
+            $data = $token["data"];
+            $query->execute([":id" => $data->user->id]);
+            if (!$query->fetchColumn()) {
+                return array("status" => 'OK');
+            }
+        }
+        return $token; // en caso de no ser valido retorna el array de error
+       
     }
 }
-
 
 ?>
