@@ -1,8 +1,8 @@
 <?php
 
-require_once '../api-rest/controllers/UserController.php';
-require_once '../api-rest/models/User.php';
-include_once '../api-rest/config/constants.php';
+require_once '../api-rest/src/controllers/UserController.php';
+require_once '../api-rest/src/models/User.php';
+include_once '../api-rest/src/config/constants.php';
 
 require 'vendor/autoload.php';
 

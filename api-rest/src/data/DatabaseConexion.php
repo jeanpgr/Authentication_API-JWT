@@ -1,6 +1,6 @@
 <?php
 
-include_once '../api-rest/config/EnvironmentVariables.php';
+include_once '../api-rest/src/config/EnvironmentVariables.php';
 require 'vendor/autoload.php';
 
 // Clase para realizar conexión con patron singleton

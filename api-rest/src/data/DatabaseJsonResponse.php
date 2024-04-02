@@ -1,8 +1,8 @@
 <?php
 
 include_once 'DatabaseConexion.php';
-include_once '../api-rest/config/EnvironmentVariables.php';
-include_once '../api-rest/config/constants.php';
+include_once '../api-rest/src/config/EnvironmentVariables.php';
+include_once '../api-rest/src/config/constants.php';
 include_once 'Queries.php';
 
 use \Firebase\JWT\JWT;
@@ -32,27 +32,14 @@ class DatabaseJsonResponse {
         /* Si mi contador de filas obtenidas es diferente de cero verifico 
           si la contraseña recibida es la misma con la que esta en la db */
         if ($rowCount != 0) { 
-            $data = $query->fetch();
-            $passw_db = $data['passw_user'];
+            $dataUser = $query->fetch();
+            $passw_db = $dataUser['passw_user'];
             // Metodo password_verify descodifica la contraseña traida de la db y la compara con la recibida
             if (password_verify($password, $passw_db)) { 
-                // Prepara el token con la información requerida
-                $token = array(
-                    "iss" => ISS,
-                    "aud" => AUD,
-                    "iat" => IAT,
-                    "nbf" => NBF,
-                    "exp" => EXP,
-
-                    "user" => array(
-                        "id" => $data['id_user'],
-                        "nombre" => $data['nomb_user'],
-                        "apellido" => $data['apell_user'],
-                        "email" => $data['email_user']
-                ));
-
-                // Codifica el token 
-                $jwt = JWT::encode($token, $this->envVariables->getKeyJwt(), $this->envVariables->getAlgJwt());
+                
+                $token = $this->buildToken($dataUser); // Prepara el token pasando el usuario($dataUser)
+                $jwt = JWT::encode($token, $this->envVariables->getKeyJwt(), $this->envVariables->getAlgJwt()); // Codifica el token 
+                
                 return array(
                     "message" => "Inicio de sesión satisfactorio.",
                     "token" => $jwt,
@@ -60,7 +47,7 @@ class DatabaseJsonResponse {
                 );
                 
             } else {
-                return array("message" => 'Inicio de sesión fallido.',
+                return array("message" => 'Contraseña Incorrecta.',
                                 "status" => 'error');
             }
         }
@@ -119,6 +106,24 @@ class DatabaseJsonResponse {
                         "users" => $users,
                         "status" => 'OK');
 
+    }
+
+    // Construye y retorna el token con la información y el usuario($data) requeridos
+    private function buildToken($dataUser) {
+        
+        return array(
+            "iss" => ISS,
+            "aud" => AUD,
+            "iat" => IAT,
+            "nbf" => NBF,
+            "exp" => EXP,
+
+            "user" => array(
+                "id" => $dataUser['id_user'],
+                "nombre" => $dataUser['nomb_user'],
+                "apellido" => $dataUser['apell_user'],
+                "email" => $dataUser['email_user']
+        ));
     }
 
     // Función para obtener token y retornar decodeado
