@@ -54,3 +54,6 @@ Content-Type: application/json
 Si deseas contribuir a este proyecto, ¡siéntete libre de hacer un fork y enviar tus pull requests!
 
 ### Licencia
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](https://github.com/jeangr-dev/Authentication_API-JWT/blob/main/LICENSE) para más detalles.
+
+
