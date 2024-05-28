@@ -3,7 +3,7 @@ Esta es una API construida con el microframework FlightPHP y utiliza JWT (JSON W
 En esta API se puede implementar más endpoints para acceder a diferentes recursos y realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) en la base de datos.
 
 ## Requisitos
-* PHP 7.0 o superior
+* PHP 7.4 o superior
 * Composer (Gestor de paquetes)
 * Base de datos MySQL u otro compatible
 ### Instalar 
